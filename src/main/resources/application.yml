@@ -1,0 +1,26 @@
+
+message-service:
+  message-key: "This is a message. nothing else to see here"
+
+logging.level.org.keycloak: trace
+logging.level.org.springframework.security: trace
+
+keycloak:
+  enable-basic-auth: false
+  realm: SpringBoot
+  auth-server-url: http://localhost:8180/auth
+  ssl-required: external
+  resource: product-service
+  use-resource-role-mappings: true
+  public-client: false
+  bearer-only: true
+  securityConstraints:
+  -   authRoles:
+      - user
+      securityCollections:
+      -   name: access only with auth # just a comment
+          patterns:
+          - /message  # the actual rest endpoint which should be protected
+
+server:
+  port: 8090

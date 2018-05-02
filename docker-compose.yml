@@ -1,0 +1,6 @@
+version: '2'
+services:
+  demoservice:
+    image: ons-openid-server:latest
+    ports:
+      - "8090:8090"
