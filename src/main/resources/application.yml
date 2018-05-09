@@ -1,9 +1,21 @@
+server:
+  port: 8090
 
 message-service:
   message-key: "This is a message. nothing else to see here"
 
-logging.level.org.keycloak: trace
+spring.profiles.active: ca
+
 logging.level.org.springframework.security: trace
+
+---
+
+# keycloak Configuration
+
+spring:
+  profiles: keycloak
+
+logging.level.org.keycloak: trace
 
 keycloak:
   enable-basic-auth: false
@@ -18,9 +30,17 @@ keycloak:
   -   authRoles:
       - user
       securityCollections:
-      -   name: access only with auth # just a comment
+      -   name: A Simple Message test
           patterns:
-          - /message  # the actual rest endpoint which should be protected
+          - /message
 
-server:
-  port: 8090
+---
+# CA API Gateway configuration
+
+spring:
+  profiles: ca
+
+clientId: 323ae95f-6bdc-4617-8613-bc86e255a3b1
+clientSecret: 9014b72f-f8d1-4e8b-9db9-877e56f5ab9f
+accessTokenUri: https://localhost:8443/auth/oauth/v2/token
+userAuthorizationUri: https://localhost:8443/auth/oauth/v2/authorize

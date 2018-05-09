@@ -1,6 +1,6 @@
 package gov.uk.ons.registers.microservice
 
-import gov.uk.ons.registers.microservice.config.SecurityConfiguration
+import gov.uk.ons.registers.microservice.config.KeycloakSecurityConfiguration
 import gov.uk.ons.registers.microservice.controller.MessageController
 import gov.uk.ons.registers.microservice.service.MessageService
 import org.springframework.boot.SpringApplication
@@ -17,6 +17,6 @@ object MessageServiceApplication {
 @ComponentScan(basePackageClasses = Array(
   classOf[MessageController],
   classOf[MessageService],
-  classOf[SecurityConfiguration])
+  classOf[KeycloakSecurityConfiguration])
 )
 class MessageServiceApplication {}
