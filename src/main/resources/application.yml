@@ -1,17 +1,13 @@
 server:
   port: 8090
 
-message-service:
-  message-key: "This is a message. nothing else to see here"
-
-spring.profiles.active: ca
+spring:
+  profiles:
+    active: "CA"
 
 logging.level.org.springframework.security: trace
 
 ---
-
-# keycloak Configuration
-
 spring:
   profiles: keycloak
 
@@ -35,12 +31,20 @@ keycloak:
           - /message
 
 ---
-# CA API Gateway configuration
-
 spring:
-  profiles: ca
+  profiles: CA
+  autoconfigure:
+      exclude: org.keycloak.adapters.springboot.KeycloakAutoConfiguration
 
-clientId: 323ae95f-6bdc-4617-8613-bc86e255a3b1
-clientSecret: 9014b72f-f8d1-4e8b-9db9-877e56f5ab9f
-accessTokenUri: https://localhost:8443/auth/oauth/v2/token
-userAuthorizationUri: https://localhost:8443/auth/oauth/v2/authorize
+#security:
+#  oauth2:
+#    resource:
+#      token-info-uri: https://localhost:8443/auth/oauth/v2/token?grant_type=client_credentials
+#    client:
+#      client-id: 323ae95f-6bdc-4617-8613-bc86e255a3b1
+#      client-secret: 9014b72f-f8d1-4e8b-9db9-877e56f5ab9f
+
+oauth:
+  clientId: 323ae95f-6bdc-4617-8613-bc86e255a3b1
+  clientSecret: 9014b72f-f8d1-4e8b-9db9-877e56f5ab9f
+  accessTokenUri: https://localhost:8443/auth/oauth/v2/token?grant_type=client_credentials&scope=read

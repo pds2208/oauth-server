@@ -1,10 +1,9 @@
 package gov.uk.ons.registers.microservice.config
 
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver
-import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.{Bean, ComponentScan, Configuration, Profile}
+import org.springframework.context.annotation.{Bean, Configuration, Profile}
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -15,7 +14,6 @@ import org.springframework.security.web.authentication.session.RegisterSessionAu
 @Configuration
 @EnableWebSecurity
 @Profile(Array("keycloak"))
-@ComponentScan(basePackageClasses = Array(classOf[KeycloakSecurityComponents]))
 class KeycloakSecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter {
 
   @Autowired
