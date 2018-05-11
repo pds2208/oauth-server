@@ -36,15 +36,9 @@ spring:
   autoconfigure:
       exclude: org.keycloak.adapters.springboot.KeycloakAutoConfiguration
 
-#security:
-#  oauth2:
-#    resource:
-#      token-info-uri: https://localhost:8443/auth/oauth/v2/token?grant_type=client_credentials
-#    client:
-#      client-id: 323ae95f-6bdc-4617-8613-bc86e255a3b1
-#      client-secret: 9014b72f-f8d1-4e8b-9db9-877e56f5ab9f
-
 oauth:
   clientId: 323ae95f-6bdc-4617-8613-bc86e255a3b1
   clientSecret: 9014b72f-f8d1-4e8b-9db9-877e56f5ab9f
-  accessTokenUri: https://localhost:8443/auth/oauth/v2/token?grant_type=client_credentials&scope=read
+  accessTokenUri: https://localhost:8443/auth/oauth/v2/token
+  grantType: client_credentials
+  scope: read

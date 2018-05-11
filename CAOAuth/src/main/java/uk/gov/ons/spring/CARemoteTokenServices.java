@@ -36,6 +36,7 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,6 +61,10 @@ public class CARemoteTokenServices implements ResourceServerTokenServices {
 
     private String tokenName = "token";
 
+    private List<String> scope;
+
+    private String grantType = "client_credentials";
+
     private AccessTokenConverter tokenConverter = new DefaultAccessTokenConverter();
 
     public CARemoteTokenServices() {
@@ -74,6 +79,8 @@ public class CARemoteTokenServices implements ResourceServerTokenServices {
             }
         });
     }
+
+
 
     public void setRestTemplate(RestOperations restTemplate) {
         this.restTemplate = restTemplate;
@@ -99,11 +106,33 @@ public class CARemoteTokenServices implements ResourceServerTokenServices {
         this.tokenName = tokenName;
     }
 
+    public List<String> getScope() {
+        return scope;
+    }
+
+    public void setScope(List<String> scope) {
+        this.scope = scope;
+    }
+
+    public String getGrantType() {
+        return grantType;
+    }
+
+    public void setGrantType(String grantType) {
+        this.grantType = grantType;
+    }
+
     @Override
     public OAuth2Authentication loadAuthentication(String accessToken) throws AuthenticationException, InvalidTokenException {
 
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add(tokenName, accessToken);
+
+        for (String s : scope) {
+            formData.add("scope", s);
+        }
+
+        formData.add("grant_type", grantType);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", getAuthorizationHeader(clientId, clientSecret));
         Map<String, Object> map = postForMap(checkTokenEndpointUrl, formData, headers);
@@ -154,5 +183,6 @@ public class CARemoteTokenServices implements ResourceServerTokenServices {
         Map<String, Object> result = map;
         return result;
     }
+
 
 }
