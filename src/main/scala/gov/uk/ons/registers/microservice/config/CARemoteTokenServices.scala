@@ -106,6 +106,8 @@ class CARemoteTokenServices() extends ResourceServerTokenServices {
         logger.debug("check_token returned error: " + map.get("error"))
       throw new InvalidTokenException(accessToken)
     }
+    //TO: Check why CA doesn't return active
+    
     // gh-838
     //        if (!Boolean.TRUE.equals(map.get("active"))) {
     //            logger.debug("check_token returned active attribute: " + map.get("active"));
