@@ -5,9 +5,6 @@ import org.springframework.context.annotation.{Bean, Configuration, Primary}
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.oauth2.config.annotation.web.configuration.{EnableResourceServer, ResourceServerConfigurerAdapter}
-//import uk.gov.ons.spring.CARemoteTokenServices
-
-import scala.collection.JavaConverters
 
 @Configuration
 @EnableResourceServer
@@ -49,11 +46,11 @@ class CASecurityConfiguration extends ResourceServerConfigurerAdapter {
     //import collection.JavaConversions._
     //val m: java.util.List[String] = l.toSeq
 
-    tokenService.setCheckTokenEndpointUrl(accessTokenUri)
-    tokenService.setClientId(clientId)
-    tokenService.setClientSecret(clientSecret)
-    tokenService.setScope(l) // was m
-    tokenService.setGrantType(grantType)
+    tokenService.checkTokenEndpointUrl = accessTokenUri
+    tokenService.clientId = clientId
+    tokenService.clientSecret = clientSecret
+    tokenService.scope = l // was m
+    tokenService.grantType = grantType
     tokenService
   }
 

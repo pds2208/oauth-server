@@ -1,35 +1,24 @@
 package gov.uk.ons.registers.microservice.config
 
-import org.apache.commons.logging.Log
+import java.io.{IOException, UnsupportedEncodingException}
+import java.util
+
 import org.apache.commons.logging.LogFactory
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.http.MediaType
+import org.springframework.http.{HttpEntity, HttpHeaders, HttpMethod, MediaType}
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.crypto.codec.Base64
-import org.springframework.security.oauth2.common.OAuth2AccessToken
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException
 import org.springframework.security.oauth2.provider.OAuth2Authentication
-import org.springframework.security.oauth2.provider.token.AccessTokenConverter
-import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter
-import org.springframework.util.LinkedMultiValueMap
-import org.springframework.util.MultiValueMap
-import org.springframework.web.client.DefaultResponseErrorHandler
-import org.springframework.web.client.RestOperations
-import org.springframework.web.client.RestTemplate
-import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices
-import java.io.IOException
-import java.io.UnsupportedEncodingException
-import java.util
-
+import org.springframework.security.oauth2.provider.token.{AccessTokenConverter, DefaultAccessTokenConverter, ResourceServerTokenServices}
+import org.springframework.util.{LinkedMultiValueMap, MultiValueMap}
+import org.springframework.web.client.{DefaultResponseErrorHandler, RestTemplate}
 
 class CARemoteTokenServices() extends ResourceServerTokenServices {
 
-  private var restTemplate : RestTemplate = new RestTemplate
+  private var _restTemplate : RestTemplate = new RestTemplate
 
-  restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
+  _restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
     @throws[IOException]
     override // Ignore 400
     def handleError(response: ClientHttpResponse): Unit = {
@@ -37,51 +26,39 @@ class CARemoteTokenServices() extends ResourceServerTokenServices {
     }
   })
 
-  final protected val logger = LogFactory.getLog(getClass)
+  private final val logger = LogFactory.getLog(getClass)
 
-  private var checkTokenEndpointUrl : String = _
-  private var clientId : String = _
-  private var clientSecret : String = _
-  private var tokenName : String = "token"
-  private var scope : Array[String] = _
-  private var grantType : String = "client_credentials"
-  private var tokenConverter : AccessTokenConverter = new DefaultAccessTokenConverter
+  private var _checkTokenEndpointUrl : String = _
+  private var _clientId : String = _
+  private var _clientSecret : String = _
+  private var _tokenName : String = "token"
+  private var _scope : Array[String] = _
+  private var _grantType : String = "client_credentials"
+  private var _tokenConverter : AccessTokenConverter = new DefaultAccessTokenConverter
 
-  def setRestTemplate(restTemplate: RestTemplate): Unit = {
-    this.restTemplate = restTemplate
-  }
+  def restTemplate: RestTemplate = _restTemplate
+  def restTemplate_= (restTemplate: RestTemplate): Unit = _restTemplate = restTemplate
 
-  def setCheckTokenEndpointUrl(checkTokenEndpointUrl: String): Unit = {
-    this.checkTokenEndpointUrl = checkTokenEndpointUrl
-  }
+  def checkTokenEndpointUrl: String = _checkTokenEndpointUrl
+  def checkTokenEndpointUrl_= (checkTokenEndpointUrl: String): Unit = _checkTokenEndpointUrl = checkTokenEndpointUrl
 
-  def setClientId(clientId: String): Unit = {
-    this.clientId = clientId
-  }
+  def clientId: String = _clientId
+  def clientId_= (clientId: String): Unit = _clientId = clientId
 
-  def setClientSecret(clientSecret: String): Unit = {
-    this.clientSecret = clientSecret
-  }
+  def clientSecret: String = _clientSecret
+  def clientSecret_= (clientSecret: String): Unit = _clientSecret = clientSecret
 
-  def setAccessTokenConverter(accessTokenConverter: AccessTokenConverter): Unit = {
-    this.tokenConverter = accessTokenConverter
-  }
+  def tokenConverter: AccessTokenConverter = _tokenConverter
+  def tokenConverter_= (tokenConverter: AccessTokenConverter): Unit = _tokenConverter = tokenConverter
 
-  def setTokenName(tokenName: String): Unit = {
-    this.tokenName = tokenName
-  }
+  def tokenName: String = _tokenName
+  def tokenName_= (tokenName: String): Unit = _tokenName = tokenName
 
-  def getScope: Array[String] = scope
+  def scope: Array[String] = _scope
+  def scope_= (scope: Array[String]): Unit = _scope = scope
 
-  def setScope(scope: Array[String]): Unit = {
-    this.scope = scope
-  }
-
-  def getGrantType: String = grantType
-
-  def setGrantType(grantType: String): Unit = {
-    this.grantType = grantType
-  }
+  def grantType: String = _grantType
+  def grantType_= (grantType: String): Unit = _grantType = grantType
 
   @throws[AuthenticationException]
   @throws[InvalidTokenException]
@@ -107,7 +84,7 @@ class CARemoteTokenServices() extends ResourceServerTokenServices {
       throw new InvalidTokenException(accessToken)
     }
     //TO: Check why CA doesn't return active
-    
+
     // gh-838
     //        if (!Boolean.TRUE.equals(map.get("active"))) {
     //            logger.debug("check_token returned active attribute: " + map.get("active"));
@@ -136,10 +113,10 @@ class CARemoteTokenServices() extends ResourceServerTokenServices {
   private def postForMap(path: String, formData: MultiValueMap[String, String], headers: HttpHeaders) = {
     if (headers.getContentType == null)
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED)
+
     @SuppressWarnings(Array("rawtypes"))
-    val map = restTemplate.exchange(path, HttpMethod.POST, new HttpEntity[MultiValueMap[String, String]](formData, headers), classOf[util.Map[_, _]]).getBody
-    @SuppressWarnings(Array("unchecked"))
-    val result = map
-    result
+    val map = restTemplate.exchange(path, HttpMethod.POST,
+      new HttpEntity[MultiValueMap[String, String]](formData, headers), classOf[util.Map[_, _]]).getBody
+    map
   }
 }
