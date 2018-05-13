@@ -40,16 +40,12 @@ class CASecurityConfiguration extends ResourceServerConfigurerAdapter {
   def tokenServices : CARemoteTokenServices = {
     val tokenService = new CARemoteTokenServices
 
-    val l : Array[String] = accessScope.split(",").map(_.trim)
-    //val m = JavaConverters.seqAsJavaList(l)
-
-    //import collection.JavaConversions._
-    //val m: java.util.List[String] = l.toSeq
+    val scopes : Array[String] = accessScope.split(",").map(_.trim)
 
     tokenService.checkTokenEndpointUrl = accessTokenUri
     tokenService.clientId = clientId
     tokenService.clientSecret = clientSecret
-    tokenService.scope = l // was m
+    tokenService.scope = scopes
     tokenService.grantType = grantType
     tokenService
   }

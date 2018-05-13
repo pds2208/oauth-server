@@ -4,8 +4,8 @@ import java.io.{IOException, UnsupportedEncodingException}
 import java.util
 
 import org.apache.commons.logging.LogFactory
-import org.springframework.http.{HttpEntity, HttpHeaders, HttpMethod, MediaType}
 import org.springframework.http.client.ClientHttpResponse
+import org.springframework.http.{HttpEntity, HttpHeaders, HttpMethod, MediaType}
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.crypto.codec.Base64
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException
@@ -16,49 +16,24 @@ import org.springframework.web.client.{DefaultResponseErrorHandler, RestTemplate
 
 class CARemoteTokenServices() extends ResourceServerTokenServices {
 
-  private var _restTemplate : RestTemplate = new RestTemplate
+  final val logger = LogFactory.getLog(getClass)
 
-  _restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
+  var checkTokenEndpointUrl: String = _
+  var clientId: String = _
+  var clientSecret: String = _
+  var tokenName: String = "token"
+  var scope: Array[String] = _
+  var grantType: String = "client_credentials"
+  var tokenConverter: AccessTokenConverter = new DefaultAccessTokenConverter
+  var restTemplate: RestTemplate = new RestTemplate
+
+  restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
     @throws[IOException]
     override // Ignore 400
     def handleError(response: ClientHttpResponse): Unit = {
       if (response.getRawStatusCode != 400) super.handleError(response)
     }
   })
-
-  private final val logger = LogFactory.getLog(getClass)
-
-  private var _checkTokenEndpointUrl : String = _
-  private var _clientId : String = _
-  private var _clientSecret : String = _
-  private var _tokenName : String = "token"
-  private var _scope : Array[String] = _
-  private var _grantType : String = "client_credentials"
-  private var _tokenConverter : AccessTokenConverter = new DefaultAccessTokenConverter
-
-  def restTemplate: RestTemplate = _restTemplate
-  def restTemplate_= (restTemplate: RestTemplate): Unit = _restTemplate = restTemplate
-
-  def checkTokenEndpointUrl: String = _checkTokenEndpointUrl
-  def checkTokenEndpointUrl_= (checkTokenEndpointUrl: String): Unit = _checkTokenEndpointUrl = checkTokenEndpointUrl
-
-  def clientId: String = _clientId
-  def clientId_= (clientId: String): Unit = _clientId = clientId
-
-  def clientSecret: String = _clientSecret
-  def clientSecret_= (clientSecret: String): Unit = _clientSecret = clientSecret
-
-  def tokenConverter: AccessTokenConverter = _tokenConverter
-  def tokenConverter_= (tokenConverter: AccessTokenConverter): Unit = _tokenConverter = tokenConverter
-
-  def tokenName: String = _tokenName
-  def tokenName_= (tokenName: String): Unit = _tokenName = tokenName
-
-  def scope: Array[String] = _scope
-  def scope_= (scope: Array[String]): Unit = _scope = scope
-
-  def grantType: String = _grantType
-  def grantType_= (grantType: String): Unit = _grantType = grantType
 
   @throws[AuthenticationException]
   @throws[InvalidTokenException]
@@ -75,7 +50,7 @@ class CARemoteTokenServices() extends ResourceServerTokenServices {
     val headers = new HttpHeaders
     headers.set("Authorization", getAuthorizationHeader(clientId, clientSecret))
 
-    val map : util.Map[String, _] = postForMap(checkTokenEndpointUrl, formData, headers)
+    val map: util.Map[String, _] = postForMap(checkTokenEndpointUrl, formData, headers)
       .asInstanceOf[util.Map[String, Any]]
 
     if (map.containsKey("error")) {
