@@ -1,32 +1,14 @@
 package gov.uk.ons.registers.microservice.config
 
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.context.annotation.{Bean, Configuration, Primary}
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.oauth2.config.annotation.web.configuration.{
-  EnableResourceServer,
-  ResourceServerConfigurerAdapter
-}
+import org.springframework.security.oauth2.config.annotation.web.configuration.{EnableResourceServer, ResourceServerConfigurerAdapter}
 
 @Configuration
 @EnableResourceServer
-class CASecurityConfiguration extends ResourceServerConfigurerAdapter {
-
-  @Value("${oauth.clientId}")
-  var clientId: String = _
-
-  @Value("${oauth.clientSecret}")
-  var clientSecret: String = _
-
-  @Value("${oauth.accessTokenUri}")
-  var accessTokenUri: String = _
-
-  @Value("${oauth.scope}")
-  var accessScope: String = _
-
-  @Value("${oauth.grantType}")
-  var grantType: String = "client_credentials"
+class CASecurityConfiguration (@Autowired val config: OAuthConfigurationProperties) extends ResourceServerConfigurerAdapter {
 
   @throws[Exception]
   override def configure(http: HttpSecurity): Unit = {
@@ -44,15 +26,15 @@ class CASecurityConfiguration extends ResourceServerConfigurerAdapter {
   def tokenServices: CARemoteTokenServices = {
     val tokenService = new CARemoteTokenServices
 
-    val scopes: Array[String] = accessScope
+    val scopes: Array[String] = config.scope
       .split(",")
       .map(_.trim)
 
-    tokenService.checkTokenEndpointUrl = accessTokenUri
-    tokenService.clientId = clientId
-    tokenService.clientSecret = clientSecret
+    tokenService.checkTokenEndpointUrl = config.accessTokenUri
+    tokenService.clientId = config.clientId
+    tokenService.clientSecret = config.clientSecret
     tokenService.scope = scopes
-    tokenService.grantType = grantType
+    tokenService.grantType = config.grantType
     tokenService
   }
 
