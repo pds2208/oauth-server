@@ -14,13 +14,15 @@ import org.springframework.security.web.authentication.session.RegisterSessionAu
 @Configuration
 @EnableWebSecurity
 @Profile(Array("keycloak"))
-class KeycloakSecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter {
+class KeycloakSecurityConfiguration
+    extends KeycloakWebSecurityConfigurerAdapter {
 
   @Autowired
   @throws[Exception]
   def configureGlobal(auth: AuthenticationManagerBuilder): Unit = {
     val keycloakAuthenticationProvider = super.keycloakAuthenticationProvider
-    keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(new SimpleAuthorityMapper)
+    keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(
+      new SimpleAuthorityMapper)
     auth.authenticationProvider(keycloakAuthenticationProvider)
   }
 
@@ -30,21 +32,18 @@ class KeycloakSecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter
   }
 
   @Bean
-  override protected def sessionAuthenticationStrategy: RegisterSessionAuthenticationStrategy = {
+  override protected def sessionAuthenticationStrategy
+    : RegisterSessionAuthenticationStrategy = {
     new RegisterSessionAuthenticationStrategy(new SessionRegistryImpl)
   }
 
-  /**
-    * Api request URI and their mapping roles and access are configured in this
-    * method.This is method from spring security web configuration Override this
-    * method to configure the HttpSecurity.
-    *
-    */
   @throws[Exception]
   override protected def configure(http: HttpSecurity): Unit = {
     super.configure(http)
-    http.authorizeRequests.antMatchers("/message*")
+    http.authorizeRequests
+      .antMatchers("/message*")
       .hasRole("user")
-      .anyRequest.permitAll
+      .anyRequest
+      .permitAll
   }
 }

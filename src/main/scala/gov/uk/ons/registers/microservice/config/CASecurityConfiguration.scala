@@ -4,26 +4,29 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.{Bean, Configuration, Primary}
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.oauth2.config.annotation.web.configuration.{EnableResourceServer, ResourceServerConfigurerAdapter}
+import org.springframework.security.oauth2.config.annotation.web.configuration.{
+  EnableResourceServer,
+  ResourceServerConfigurerAdapter
+}
 
 @Configuration
 @EnableResourceServer
 class CASecurityConfiguration extends ResourceServerConfigurerAdapter {
 
   @Value("${oauth.clientId}")
-  var clientId : String = _
+  var clientId: String = _
 
   @Value("${oauth.clientSecret}")
-  var clientSecret : String = _
+  var clientSecret: String = _
 
   @Value("${oauth.accessTokenUri}")
-  var accessTokenUri : String = _
+  var accessTokenUri: String = _
 
   @Value("${oauth.scope}")
-  var accessScope : String = _
+  var accessScope: String = _
 
   @Value("${oauth.grantType}")
-  var grantType : String = "client_credentials"
+  var grantType: String = "client_credentials"
 
   @throws[Exception]
   override def configure(http: HttpSecurity): Unit = {
@@ -33,15 +36,15 @@ class CASecurityConfiguration extends ResourceServerConfigurerAdapter {
       .and
       .authorizeRequests
       .antMatchers("/message")
-      .access("#oauth2.hasScope('read')")     // require 'read' scope to access /message URL
+      .access("#oauth2.hasScope('read')") // require 'read' scope to access /message URL
   }
 
   @Primary
   @Bean
-  def tokenServices : CARemoteTokenServices = {
+  def tokenServices: CARemoteTokenServices = {
     val tokenService = new CARemoteTokenServices
 
-    val scopes : Array[String] = accessScope
+    val scopes: Array[String] = accessScope
       .split(",")
       .map(_.trim)
 

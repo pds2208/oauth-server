@@ -5,8 +5,8 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 
 object MessageServiceApplication {
-  def main(args: Array[String]) : Unit = {
-    SpringApplication.run(classOf[MessageServiceApplication], args :_ *)
+  def main(args: Array[String]): Unit = {
+    SpringApplication.run(classOf[MessageServiceApplication], args: _*)
   }
 }
 
@@ -25,9 +25,8 @@ class MessageServiceApplication {
     * -Djavax.net.ssl.trustStore=<location of your choice>jssecacerts
     *
     * */
-
-  javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(
-    new javax.net.ssl.HostnameVerifier() {
+  javax.net.ssl.HttpsURLConnection
+    .setDefaultHostnameVerifier(new javax.net.ssl.HostnameVerifier() {
 
       override def verify(hostname: String, sslSession: SSLSession): Boolean = {
         if (hostname == "localhost") {

@@ -10,9 +10,16 @@ import org.springframework.security.core.AuthenticationException
 import org.springframework.security.crypto.codec.Base64
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException
 import org.springframework.security.oauth2.provider.OAuth2Authentication
-import org.springframework.security.oauth2.provider.token.{AccessTokenConverter, DefaultAccessTokenConverter, ResourceServerTokenServices}
+import org.springframework.security.oauth2.provider.token.{
+  AccessTokenConverter,
+  DefaultAccessTokenConverter,
+  ResourceServerTokenServices
+}
 import org.springframework.util.{LinkedMultiValueMap, MultiValueMap}
-import org.springframework.web.client.{DefaultResponseErrorHandler, RestTemplate}
+import org.springframework.web.client.{
+  DefaultResponseErrorHandler,
+  RestTemplate
+}
 
 class CARemoteTokenServices extends ResourceServerTokenServices {
 
@@ -50,8 +57,9 @@ class CARemoteTokenServices extends ResourceServerTokenServices {
     val headers = new HttpHeaders
     headers.set("Authorization", getAuthorizationHeader(clientId, clientSecret))
 
-    val map: util.Map[String, _] = postForMap(checkTokenEndpointUrl, formData, headers)
-      .asInstanceOf[util.Map[String, Any]]
+    val map: util.Map[String, _] =
+      postForMap(checkTokenEndpointUrl, formData, headers)
+        .asInstanceOf[util.Map[String, Any]]
 
     if (map.containsKey("error")) {
       if (logger.isDebugEnabled)
@@ -69,28 +77,36 @@ class CARemoteTokenServices extends ResourceServerTokenServices {
     tokenConverter.extractAuthentication(map)
   }
 
-  override def readAccessToken(accessToken: String) = throw new UnsupportedOperationException("Not supported: read access token")
+  override def readAccessToken(accessToken: String) =
+    throw new UnsupportedOperationException("Not supported: read access token")
 
   private def getAuthorizationHeader(clientId: String, clientSecret: String) = {
     if (clientId == null || clientSecret == null)
-      logger.warn("Null Client ID or Client Secret detected. Endpoint that requires authentication will reject request with 401 error.")
+      logger.warn(
+        "Null Client ID or Client Secret detected. Endpoint that requires authentication will reject request with 401 error.")
 
     val creds = String.format("%s:%s", clientId, clientSecret)
 
-    try
-      "Basic " + new String(Base64.encode(creds.getBytes("UTF-8")))
+    try "Basic " + new String(Base64.encode(creds.getBytes("UTF-8")))
     catch {
       case e: UnsupportedEncodingException =>
         throw new IllegalStateException("Could not convert String")
     }
   }
 
-  private def postForMap(path: String, formData: MultiValueMap[String, String], headers: HttpHeaders) = {
+  private def postForMap(path: String,
+                         formData: MultiValueMap[String, String],
+                         headers: HttpHeaders) = {
     if (headers.getContentType == null)
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED)
 
-    val map = restTemplate.exchange(path, HttpMethod.POST,
-      new HttpEntity[MultiValueMap[String, String]](formData, headers), classOf[util.Map[_, _]]).getBody
+    val map = restTemplate
+      .exchange(
+        path,
+        HttpMethod.POST,
+        new HttpEntity[MultiValueMap[String, String]](formData, headers),
+        classOf[util.Map[_, _]])
+      .getBody
     map
   }
 }
