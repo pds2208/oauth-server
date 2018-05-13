@@ -14,7 +14,7 @@ import org.springframework.security.oauth2.provider.token.{AccessTokenConverter,
 import org.springframework.util.{LinkedMultiValueMap, MultiValueMap}
 import org.springframework.web.client.{DefaultResponseErrorHandler, RestTemplate}
 
-class CARemoteTokenServices() extends ResourceServerTokenServices {
+class CARemoteTokenServices extends ResourceServerTokenServices {
 
   final val logger = LogFactory.getLog(getClass)
 
@@ -89,7 +89,6 @@ class CARemoteTokenServices() extends ResourceServerTokenServices {
     if (headers.getContentType == null)
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED)
 
-    @SuppressWarnings(Array("rawtypes"))
     val map = restTemplate.exchange(path, HttpMethod.POST,
       new HttpEntity[MultiValueMap[String, String]](formData, headers), classOf[util.Map[_, _]]).getBody
     map

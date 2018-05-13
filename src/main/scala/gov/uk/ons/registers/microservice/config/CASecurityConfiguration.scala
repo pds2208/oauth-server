@@ -28,7 +28,8 @@ class CASecurityConfiguration extends ResourceServerConfigurerAdapter {
   @throws[Exception]
   override def configure(http: HttpSecurity): Unit = {
     http
-      .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+      .sessionManagement()
+      .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
       .and
       .authorizeRequests
       .antMatchers("/message")
@@ -40,7 +41,9 @@ class CASecurityConfiguration extends ResourceServerConfigurerAdapter {
   def tokenServices : CARemoteTokenServices = {
     val tokenService = new CARemoteTokenServices
 
-    val scopes : Array[String] = accessScope.split(",").map(_.trim)
+    val scopes : Array[String] = accessScope
+      .split(",")
+      .map(_.trim)
 
     tokenService.checkTokenEndpointUrl = accessTokenUri
     tokenService.clientId = clientId
