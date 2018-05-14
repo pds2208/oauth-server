@@ -57,8 +57,7 @@ class CARemoteTokenServices extends ResourceServerTokenServices {
     val headers = new HttpHeaders
     headers.set("Authorization", getAuthorizationHeader(clientId, clientSecret))
 
-    val map: util.Map[String, _] =
-      postForMap(checkTokenEndpointUrl, formData, headers)
+    val map = postForMap(checkTokenEndpointUrl, formData, headers)
         .asInstanceOf[util.Map[String, Any]]
 
     if (map.containsKey("error")) {
@@ -89,7 +88,7 @@ class CARemoteTokenServices extends ResourceServerTokenServices {
 
     try "Basic " + new String(Base64.encode(creds.getBytes("UTF-8")))
     catch {
-      case e: UnsupportedEncodingException =>
+      case _: UnsupportedEncodingException =>
         throw new IllegalStateException("Could not convert String")
     }
   }
